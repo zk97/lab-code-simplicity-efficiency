@@ -11,20 +11,39 @@ For example, if you are given the number 15, there are 3 possibilities to compos
 The following function shows one way to solve the problem but the code is not ideal or efficient.
 Refactor the code based on what you have learned about code simplicity and efficiency.
 """
+def size():
+    x=input("What is the maximal length of the triangle side? Enter a number: ")
+    try:
+        x=int(x)
+    except:
+        print("Please enter a valid number")
+        x=size()
+    if x<5:
+        print("Please enter number 5 or greater")
+        x=size()
+    return x
 
-def my_function(X):
-    solutions = []
-    for x in range(5, X):
-        for y in range(4, X):
-            for z in range(3, X):
-                if (x*x==y*y+z*z):
-                  solutions.append([x, y, z])
-    m = 0
-    for solution in solutions:
-        if m < max(solution):
-            m = max(solution)
-    return m
+#Optimized function allows to search for bigger numbers (remember, if top=5n for some n then 3n^2+4n^2=top^2)
+def calculate(top):
+    #Check if top mod(5)!=0
+    if top%5:
+        #If not x,y are found then try with top -1 using break prevents extra iterations
+        for y in range(3,int(top*.75)+1):
+            for x in range(top-y,top):
+                if top**2==x*x+y*y:
+                    return top,x,y
+        top,x,y=calculate(top-1)
+    return top,x,y
 
-X = input("What is the maximal length of the triangle side? Enter a number: ")
+#def my_function(X):
+#    solutions = [[x,y,z] for x in range(5,X) for y in range (4,X) for z in range(3,X) if x*x==y*y+z*z]
+#    return solutions[-1][0]
+#
+#X = input("What is the maximal length of the triangle side? Enter a number: ")
+#
+#print("The longest side possible is " + str(my_function(int(X))))
 
-print("The longest side possible is " + str(my_function(int(X))))
+if __name__=='__main__':
+    print("Up to 4 digits answer is given in acceptable time")
+    sizes=calculate(size())
+    print(f"The longest side possible is {sizes[0]} with solution being {sizes}")

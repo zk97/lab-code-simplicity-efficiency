@@ -13,6 +13,19 @@ The following class calculates the total ways to climb a stair with the specifie
 It also counts the number of calculations performed which indicates the efficiency of the code.
 Try if you can improve the performance of the code.
 """
+from scipy.special import comb
+
+def steps():
+    x=input("How many steps in the stair?")
+    try:
+        x=int(x)
+    except:
+        print("Please enter a valid number")
+        x=steps()
+    if x<0:
+        print("Please enter number 1 or greater")
+        x=steps()
+    return x
 
 class ClimbStairs:
     """
@@ -24,25 +37,21 @@ class ClimbStairs:
         self.calculation_count = 0
 
     """
-    This function calculates how many solutions are there to reach the top when I am currently at the ith step
-    i - the step I am currently at
+    This function calculates how many solutions are there to reach the top when climbing i times 2 steps
+    and n - 2i times 1 step
     """
     def calc_solutions(self, i):
-        # If the current step is already larger than total steps, there's 0 solution
-        if i > self.total_steps:
+        # If the we try to climb 2 steps more than n/2 times there is no solution
+        if i > self.total_steps-i:
             return 0
 
-        # If the current step equals to the total steps, there is only one solution because I've reached the top
-        if i == self.total_steps:
-            return 1
-
-        # If I am still in the middle of the stair, continue calculating
+        # If solution is possible, continue calculating
         self.calculation_count += 1
 
         # Call the current function recursively. 
-        # The number of solutions at the ith step equals to the number of solutions at the (i+1)th step 
-        # plus the number of solutions at the (i+2)th step
-        return(self.calc_solutions(i+1) + self.calc_solutions(i+2))
+        # The number of solutions for i or more times 2 steps equals to the number of solutions for (i+1) or more times 2 steps
+        # plus number of ways of picking double steps from [total times=n- number of double steps]
+        return(self.calc_solutions(i+1) + comb(self.total_steps-i,i,exact=True))
 
     def get_calculation_count(self):
         return self.calculation_count
@@ -50,7 +59,8 @@ class ClimbStairs:
     def solve(self):
         return self.calc_solutions(0)
 
-total_steps = input("How many steps in the stair?")
-new_challenge = ClimbStairs(int(total_steps))
-print('Ways to climb to top: ' + str(new_challenge.solve()))
-print('Total calculations performed: ' + str(new_challenge.get_calculation_count()))
+if __name__=='__main__':
+    total_steps = steps()
+    new_challenge = ClimbStairs(total_steps)
+    print(f'Ways to climb to top: {new_challenge.solve()}')
+    print(f'Total calculations performed: {new_challenge.get_calculation_count()}')
